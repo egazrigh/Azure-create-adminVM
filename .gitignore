@@ -1,0 +1,5 @@
+.terraform
+*.tfstate
+*.tfstate.backup
+packer_variables.json
+provider.tf
