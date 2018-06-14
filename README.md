@@ -44,3 +44,9 @@ packer build var-file=.\packer_variables.json Win2016_Azure_AdminVM.json
 -- Powershell profiles
 -- Git Profile
 -- Clone Git Repos
+
+# Notes
+- Some choco packages don't install well
+-- RSAT Windows feature
+-- poshgit Powershell module
+
