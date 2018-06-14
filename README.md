@@ -40,4 +40,7 @@ packer build var-file=.\packer_variables.json Win2016_Azure_AdminVM.json
 
 # ToDo
 - Resolve vscode extension that are not retained after sysprep
-- 
+- Add more customization eventually using a post install script 
+-- Powershell profiles
+-- Git Profile
+-- Clone Git Repos
