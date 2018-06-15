@@ -1,0 +1,71 @@
+{
+    "_comment": "This Packer File generates a Windows Server 2016 image on Azure with most commons admin & devops tools",
+    "variables": {    
+      "subscription_id": "",
+      "tenant_id": "",
+      "client_id": "",
+      "client_secret": "",
+      "location":"",
+      "managed_image_resource_group_name":"",
+      "build_date" : "",
+      "projectname" : "",
+      "owner" : "",
+      "billing" : "",
+      "environment" : "",
+      "choco_packages" : "",
+      "windowsfeatures" : "",
+      "powershell_psgallery_modules" : ""
+    },
+    "builders": [{
+      "type": "azure-arm",
+  
+      "client_id": "{{user `client_id`}}",
+      "client_secret": "{{user `client_secret`}}",
+      "subscription_id": "{{user `subscription_id`}}",
+      "tenant_id": "{{user `tenant_id`}}",
+  
+      "os_type": "Linux",
+      "image_publisher": "RedHat",
+      "image_offer": "RHEL",
+      "image_sku": "7.3",
+  
+      "managed_image_resource_group_name": "{{user `managed_image_resource_group_name`}}",
+      "managed_image_name": "RHEL7.3-VM-{{user `projectname`}}-{{user `build_date`}}-{{timestamp}}",
+  
+      "communicator": "winrm",
+      "winrm_use_ssl": "true",
+      "winrm_insecure": "true",
+      "winrm_timeout": "3m",
+      "winrm_username": "packer",
+  
+      "azure_tags": {
+        "madewith": "HashiCorp Packer {{packer_version}}",
+        "Usage" : "RHEL7.3 VM",
+        "projectname" : "{{user `projectname`}}",
+        "owner" : "{{user `owner`}}",
+        "billing" : "{{user `billing`}}",
+        "environment" : "{{user `environment`}}",
+        "build_date" : "{{user `build_date`}}"
+      },
+  
+      "location": "{{user `location`}}",
+      "vm_size": "Standard_D2_v2"
+    }],
+    "provisioners": [
+        {
+          "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+          "inline_shebang": "/bin/sh -x",
+          "type": "shell",
+          "inline": [
+            "sleep 30",
+            "sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm",
+            "sudo rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm",
+            "sudo yum -y update",
+            "sudo yum -y install nginx18",
+            "sudo systemctl enable nginx.service",
+            "sudo systemctl start nginx.service",
+            "firewall-cmd --permanent --zone=public --add-port=80/tcp",
+            "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
+          ]
+    }]
+}
